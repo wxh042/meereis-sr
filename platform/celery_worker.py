@@ -6,6 +6,12 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+# PyTorch and pywin32 share DLL search paths on Windows/Conda.
+# Load the filesystem transport's Windows bindings before importing PyTorch.
+if os.name == "nt":
+    import win32file
+    import win32con
+
 import cv2
 import numpy as np
 import torch
@@ -32,8 +38,10 @@ MODEL_WEIGHT_PATHS = {
     "25km": Path(os.getenv("SRGAN_25KM_WEIGHTS_PATH", os.getenv("SRGAN_WEIGHTS_PATH", BASE_DIR / "G_v2_epoch_100.pth"))),
     "10km": Path(os.getenv("SRGAN_10KM_WEIGHTS_PATH", BASE_DIR / "G_v4_epoch_100.pth")),
 }
-HISTORY_PATH = BASE_DIR / "history.csv"
-TASK_STORAGE_DIR = BASE_DIR / "task_storage"
+RUNTIME_DIR = Path(os.getenv("MEEREIS_RUNTIME_DIR", BASE_DIR / "task_storage"))
+RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+HISTORY_PATH = RUNTIME_DIR / "history.csv"
+TASK_STORAGE_DIR = RUNTIME_DIR
 TASK_UPLOADS_DIR = TASK_STORAGE_DIR / "uploads"
 TASK_RESULTS_DIR = TASK_STORAGE_DIR / "results"
 SCALE_FACTOR = 4
@@ -52,7 +60,7 @@ celery_app.conf.update(
 # Optional local demo transport: real background worker, no Redis installation required.
 # Production deployment continues to use Redis by default.
 if REDIS_URL == "filesystem://":
-    queue_dir = BASE_DIR / "task_storage" / "queue"
+    queue_dir = RUNTIME_DIR / "queue"
     control_dir = queue_dir / "control"
     queue_dir.mkdir(parents=True, exist_ok=True)
     control_dir.mkdir(parents=True, exist_ok=True)

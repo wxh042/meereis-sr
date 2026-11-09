@@ -71,5 +71,5 @@ def inspect_and_plot_he5(file_path):
 
 
 # --- 使用你的路径 ---
-file_path = r"D:\graduate\code\osi_saf_images\AMSR_U2_L3_SeaIce12km_B04_20220105.he5"
+file_path = os.getenv("MEEREIS_HE5_FILE", "datasets/sample.he5")
 inspect_and_plot_he5(file_path)

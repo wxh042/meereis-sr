@@ -12,8 +12,8 @@ import math
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.environ['TORCH_HOME'] = os.path.join(BASE_DIR, "pretrained")
 
-HR_PATH = os.path.join(BASE_DIR, "train_HR")
-LR_PATH = os.path.join(BASE_DIR, "train_LR")
+HR_PATH = os.getenv("MEEREIS_TRAIN_HR", os.path.join(BASE_DIR, "..", "datasets", "10km", "train_HR"))
+LR_PATH = os.getenv("MEEREIS_TRAIN_LR", os.path.join(BASE_DIR, "..", "datasets", "10km", "train_LR"))
 SAVE_DIR = os.path.join(BASE_DIR, "checkpoints_v4")
 LOG_FILE = os.path.join(BASE_DIR, "train_log.txt")
 os.makedirs(SAVE_DIR, exist_ok=True)

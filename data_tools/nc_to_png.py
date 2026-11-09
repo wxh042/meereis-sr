@@ -4,8 +4,8 @@ from PIL import Image
 import os
 
 # --- 路径配置 ---
-input_dir = r"D:\graduate\code\data"
-output_dir = r"D:\graduate\code\train_HR"
+input_dir = os.getenv("MEEREIS_NC_DIR", "datasets/raw_nc")
+output_dir = os.getenv("MEEREIS_HR_DIR", "datasets/train_HR")
 var_name = "cdr_seaice_conc"
 
 if not os.path.exists(output_dir):

@@ -13,8 +13,8 @@ import math
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.environ['TORCH_HOME'] = os.path.join(BASE_DIR, "pretrained")
 
-HR_PATH = os.path.join(BASE_DIR, "train_HR")
-LR_PATH = os.path.join(BASE_DIR, "train_LR")
+HR_PATH = os.getenv("MEEREIS_TRAIN_HR", os.path.join(BASE_DIR, "..", "datasets", "10km", "train_HR"))
+LR_PATH = os.getenv("MEEREIS_TRAIN_LR", os.path.join(BASE_DIR, "..", "datasets", "10km", "train_LR"))
 
 # 修改保存路径为 baseline
 SAVE_DIR = os.path.join(BASE_DIR, "checkpoints_baseline")

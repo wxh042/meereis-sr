@@ -1,0 +1,16 @@
+name: Verify MEEREIS-SR
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  windows-cpu:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.lock.txt
+      - name: Install verified dependencies
+        run: python -m pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.lock.txt
+      - name: Verify inference and tasks
+        run: python scripts/verify.py

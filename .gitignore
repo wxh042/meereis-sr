@@ -13,3 +13,6 @@ train_HR/
 train_LR/
 *.nc
 *.log
+runtime/
+datasets/
+*.zip

@@ -161,7 +161,7 @@ class VGGPerceptualLoss(nn.Module):
 
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    hr_dir = os.path.join(BASE_DIR, "train_patches")
+    hr_dir = os.getenv("MEEREIS_TRAIN_PATCHES", os.path.join(BASE_DIR, "..", "datasets", "25km", "train_patches"))
     save_dir = os.path.join(BASE_DIR, "check_points_v2")  # 存到新文件夹
     os.makedirs(save_dir, exist_ok=True)
 

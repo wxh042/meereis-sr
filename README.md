@@ -24,37 +24,16 @@
 ![测试结果](docs/evaluation_matrix.png)
 ![CBAM消融](docs/ablation_final_comparison.png)
 
-## 安装与运行
+## 一键运行与维护
 
-建议 Python 3.11，在独立虚拟环境中安装：
+本机主目录 `D:\graduate\meereis-sr`：
 
-```bash
-pip install -r requirements.txt
-cd platform
-```
+- 双击 **启动平台.cmd**：统一启动网页、API 与后台 Worker；关闭时按 Ctrl+C。
+- 双击 **验证项目.cmd**：用隔离的临时数据验证双模型、单张/批量任务及错误处理。
+- 首次启动自动生成本机登录配置 `runtime/local-config.json`，用户名 `researcher`。
+- 默认使用 SQLite + Celery 本地文件队列，不依赖外部数据库或 Redis；原 MySQL/Redis 接口仍支持环境变量配置。
 
-完整平台启动前设置环境变量（不要提交真实密码）：
-
-```powershell
-$env:JWT_SECRET_KEY = '<自行生成的随机字符串>'
-$env:DEMO_PASSWORD = '<自行设置的演示密码>'
-# 默认使用本地 SQLite；生产/研究环境可通过此变量切换到 MySQL
-# $env:SQLALCHEMY_DATABASE_URL = 'mysql+pymysql://USER:PASSWORD@HOST:3306/meereis_db'
-```
-
-默认队列使用 Redis（127.0.0.1:6379）。在三个终端中启动：
-
-```bash
-python -m uvicorn app:app --host 127.0.0.1 --port 8001
-python -m celery -A celery_worker.celery_app worker --pool=solo --loglevel=info
-python -m streamlit run web_gui.py --server.address 127.0.0.1
-```
-
-每个终端须设置相同的数据库、JWT 和队列环境变量。浏览器访问 http://127.0.0.1:8501 ，演示用户名 `researcher`，密码为自己设置的 `DEMO_PASSWORD`。Windows 使用 `solo` 工作池。
-
-无需 Redis 的本地验证模式可设置 `CELERY_BROKER_URL=filesystem://`，并将 `CELERY_RESULT_BACKEND` 设为已创建文件夹的 `file:///` URI。仍通过独立 Celery Worker 后台执行，不是同步替代。
-
-仅运行模型，无需数据库或队列：
+新机器先创建 Python 3.11 `.venv`，按 `requirements.lock.txt` 安装已验证依赖，详见 [维护说明](docs/MAINTENANCE.md)。
 
 ```bash
 python scripts/infer.py --input examples/input.png --model 10km --output output.png
