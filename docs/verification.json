@@ -1,0 +1,30 @@
+{
+  "single_inference": [
+    {
+      "model": "25km",
+      "state": "SUCCESS",
+      "output_size": [
+        128,
+        128
+      ]
+    },
+    {
+      "model": "10km",
+      "state": "SUCCESS",
+      "output_size": [
+        128,
+        128
+      ]
+    }
+  ],
+  "batch_size": 2,
+  "authentication": true,
+  "invalid_model_rejected": true,
+  "invalid_image_rejected": true,
+  "history_persistence": true,
+  "streamlit_health": true,
+  "transport": "Celery filesystem worker + file result backend",
+  "database": "SQLite isolated smoke database",
+  "device": "CPU",
+  "full_training_repeated": false
+}

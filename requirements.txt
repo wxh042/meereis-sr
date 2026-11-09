@@ -1,0 +1,25 @@
+torch>=2.2
+torchvision>=0.17
+numpy>=1.26
+pillow>=10
+opencv-python-headless>=4.9
+matplotlib>=3.8
+pandas>=2
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+SQLAlchemy>=2
+pymysql>=1.1
+celery>=5.4
+redis>=5
+python-jose[cryptography]>=3.3
+passlib[bcrypt]>=1.7.4
+bcrypt<4.1
+streamlit>=1.35
+streamlit-antd-components
+streamlit-image-comparison
+requests
+netCDF4
+scikit-image
+h5py
+pywin32; sys_platform == "win32"

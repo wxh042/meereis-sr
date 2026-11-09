@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+*.db
+*.db-*
+history.csv
+task_storage/
+storage/
+checkpoints*/
+train_HR/
+train_LR/
+*.nc
+*.log
