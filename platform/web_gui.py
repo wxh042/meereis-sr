@@ -345,6 +345,33 @@ def inject_enhanced_styles() -> None:
         div[data-testid="stSelectbox"] div[data-baseweb="select"] * {{
             color: #000000 !important;
         }}
+        [data-testid="stAppDeployButton"] {{ display: none; }}
+        [data-testid="stMainBlockContainer"] {{ max-width: 1200px; padding-top: 1.5rem; }}
+        .stApp {{ background-image: linear-gradient(160deg,#0c2138,#071728) !important; }}
+        .hero-banner {{ padding: 24px !important; border-radius: 18px !important;
+            margin-bottom: 22px !important; background-position: center 48%; }}
+        .glass-tile, .glass-card {{ background: #122a40 !important;
+            box-shadow: none !important; padding: 22px !important; border-color: #294359 !important; }}
+        .glass-tile:hover, .glass-card:hover {{ transform: none !important; }}
+        [data-testid="stSidebar"] {{ background: #0a1d33 !important; }}
+        [data-testid="stSidebar"] [data-testid="stRadio"] label {{
+            padding: 7px 10px; border-radius: 8px; }}
+        [data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) {{
+            background: #193d55; outline: 1px solid #28627b; }}
+        [data-testid="stFileUploader"] {{ border: 1px dashed #527189; border-radius: 12px; }}
+        [data-testid="stFileUploaderDropzone"] {{ background: #163149; }}
+        [data-testid="stFileUploader"] p, [data-testid="stFileUploader"] small {{ color: #dfebf5 !important; }}
+        [data-testid="stExpander"] {{ background: #10283e; border-radius: 10px; }}
+        .stButton > button:disabled {{ opacity: .45 !important; }}
+        .stButton > button, .stDownloadButton > button {{
+            background: #087fa7 !important; box-shadow: none !important; min-height: 44px; }}
+        .stButton > button:hover, .stDownloadButton > button:hover {{ background: #0795be !important; }}
+        .small-note {{ color: #a8bdd0 !important; margin-bottom: 20px; }}
+        @media(max-width:700px) {{
+            [data-testid="stMainBlockContainer"] {{ padding-left: 16px; padding-right: 16px; }}
+            .hero-banner {{ padding: 20px !important; }}
+            .hero-banner h1 {{ font-size: 2rem !important; }}
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -658,15 +685,15 @@ def render_hero_header() -> None:
     if logo_uri:
         logo_html = (
             f'<img src="{logo_uri}" alt="OUC Logo" '
-            'style="width:92px; height:92px; margin-bottom:18px; '
+            'style="width:56px; height:56px; margin-bottom:8px; '
             'filter: drop-shadow(0 6px 18px rgba(0,0,0,0.28));" />'
         )
     st.markdown(
         f"""
         <div class="hero-banner">
             {logo_html}
-            <h1 style="font-size: 3.8rem; margin-bottom: 0;">MEEREIS-SR</h1>
-            <p style="font-size: 1.4rem; color: {POLAR_LIGHT_BLUE}; margin-top: 12px;">
+            <h1 style="font-size: 2.6rem; margin-bottom: 0;">MEEREIS-SR</h1>
+            <p style="font-size: 1.1rem; color: {POLAR_LIGHT_BLUE}; margin-top: 12px;">
                 中国海洋大学 · 海冰密集度智能监测平台
             </p>
             <div style="margin-top: 20px; font-size: 1rem; color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
@@ -704,26 +731,6 @@ def render_login_page() -> None:
                 st.rerun()
 
 
-def render_comparison_block(left_image: Image.Image, right_image: Image.Image, pseudo_color: Image.Image, residual: Image.Image) -> None:
-    image_comparison(
-        img1=left_image,
-        img2=right_image,
-        label1=LEFT_LABEL,
-        label2=RIGHT_LABEL,
-        width=700,
-        show_labels=True,
-        starting_position=50,
-        make_responsive=True,
-        in_memory=True,
-    )
-    st.markdown(f'<div class="small-note">{SLIDER_NOTE}</div>', unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.image(pseudo_color, caption="伪彩色增强参考图", width="stretch")
-    with col2:
-        st.image(residual, caption="残差细节图（SR - Bicubic）", width="stretch")
-
-
 def show_processing_animation():
     left_col, center_col, right_col = st.columns([1, 1.2, 1])
     with center_col:
@@ -744,41 +751,33 @@ def render_comparison_block(
     pseudo_viridis: Image.Image,
     pseudo_jet: Image.Image,
 ) -> None:
-    st.markdown("### 四维重建质量矩阵")
-    grid_cols = st.columns(4)
-    with grid_cols[0]:
-        st.image(input_lr, caption="Input (LR)", width="stretch")
-    with grid_cols[1]:
-        st.image(bicubic, caption="Bicubic", width="stretch")
-    with grid_cols[2]:
-        st.image(
-            srgan,
-            caption=f"SRGAN ({st.session_state.get('current_result_model_type') or st.session_state.get('model_type', '25km')})",
-            width="stretch",
-        )
-    with grid_cols[3]:
-        st.image(residual, caption="Residual Map", width="stretch")
-
-    st.markdown("### 伪彩色辅助视图")
-    pseudo_cols = st.columns(2)
-    with pseudo_cols[0]:
-        st.image(pseudo_viridis, caption="Viridis - 低密集度冰区识别", width="stretch")
-    with pseudo_cols[1]:
-        st.image(pseudo_jet, caption="Jet - 冰水边界增强", width="stretch")
-
-    st.markdown("### 细节锐度对比")
+    st.markdown("### 拖动查看重建细节")
+    st.caption("左右拖动图像中的分界线，对比 Bicubic 与 SRGAN + CBAM 的重建细节。")
     image_comparison(
         img1=bicubic,
         img2=srgan,
-        label1=LEFT_LABEL,
-        label2=RIGHT_LABEL,
-        width=700,
+        label1="Bicubic 插值",
+        label2="SRGAN + CBAM",
+        width=760,
         show_labels=True,
         starting_position=50,
         make_responsive=True,
         in_memory=True,
     )
     st.markdown(f'<div class="small-note">{SLIDER_NOTE}</div>', unsafe_allow_html=True)
+    st.markdown("### 重建质量对照")
+    grid_cols = st.columns(4)
+    for column, image, caption in zip(grid_cols,
+        [input_lr, bicubic, srgan, residual],
+        ["输入切片 LR", "Bicubic 插值", "SRGAN + CBAM", "残差 SR − Bicubic"]):
+        with column:
+            st.image(image, caption=caption, width="stretch")
+    with st.expander("伪彩色辅助视图", expanded=False):
+        pseudo_cols = st.columns(2)
+        with pseudo_cols[0]:
+            st.image(pseudo_viridis, caption="Viridis · 密集度分布", width="stretch")
+        with pseudo_cols[1]:
+            st.image(pseudo_jet, caption="Jet · 冰水边界参考", width="stretch")
 
 
 def render_home_page(total_count: int, today_count: int) -> None:
@@ -1132,18 +1131,18 @@ def _get_latest_active_task(task_type: str) -> dict | None:
 
 
 def render_single_image_page(operator_name: str) -> None:
-    st.markdown("## Single Image Super-Resolution")
+    st.markdown("## 单图重建")
     model_type = st.session_state.get("model_type", "25km")
     st.info(f"当前模式：{MODEL_MODE_NAMES.get(model_type, model_type)}")
     uploaded_file = st.file_uploader(
-        "Upload a low-resolution sea-ice image",
+        "上传海冰低分辨率切片",
         type=SUPPORTED_TYPES,
         accept_multiple_files=False,
         key="single_uploader",
     )
 
     if st.button(
-        "Start Super-Resolution",
+        "开始重建",
         width="stretch",
         key="single_run_unified",
         disabled=uploaded_file is None,
@@ -1188,23 +1187,23 @@ def render_single_image_page(operator_name: str) -> None:
 
     result = st.session_state.get("single_result")
     if result:
-        st.markdown("### Scientific Result View")
+        st.markdown("### 重建结果")
         _render_result_detail(result, 1, "single")
 
 
 def render_batch_page(operator_name: str) -> None:
-    st.markdown("## Batch Super-Resolution")
+    st.markdown("## 批量处理")
     model_type = st.session_state.get("model_type", "25km")
     st.info(f"当前模式：{MODEL_MODE_NAMES.get(model_type, model_type)}")
     uploaded_files = st.file_uploader(
-        "Upload multiple low-resolution sea-ice images",
+        "上传多张海冰切片",
         type=SUPPORTED_TYPES,
         accept_multiple_files=True,
         key="batch_uploader",
     )
 
     if st.button(
-        "Start Batch Super-Resolution",
+        "开始批量重建",
         width="stretch",
         key="batch_run_unified",
         disabled=not uploaded_files,
@@ -1260,14 +1259,14 @@ def render_batch_page(operator_name: str) -> None:
 
     if st.session_state.get("batch_zip_bytes"):
         st.download_button(
-            label="Download All HR Results as ZIP",
+            label="打包下载全部重建结果",
             data=st.session_state["batch_zip_bytes"],
             file_name="meereis_sr_batch_results.zip",
             mime="application/zip",
             key="batch_zip_download_unified",
         )
 
-    st.markdown("### Detailed Batch Results")
+    st.markdown("### 批量重建结果")
     for index, item in enumerate(batch_results, start=1):
         title = f"{index}. {item.get('filename', 'result')}"
         with st.expander(title, expanded=index == 1):
@@ -1310,26 +1309,21 @@ def main() -> None:
         st.caption("Arctic sea-ice concentration super-resolution platform")
 
         st.divider()
-        selected = sac.menu(
-            [
-                sac.MenuItem("Home", icon="house"),
-                sac.MenuItem("Single Image SR", icon="image"),
-                sac.MenuItem("Batch Processing", icon="layers"),
-                sac.MenuItem("History", icon="clock"),
-                sac.MenuItem("About", icon="info-circle"),
-            ],
-            color="#4fd1ff",
-            index=0,
-            variant="light",
-            key="main_menu",
-        )
+        navigation = {
+            "平台总览": "Home", "单图重建": "Single Image SR",
+            "批量处理": "Batch Processing", "任务历史": "History", "项目说明": "About",
+        }
+        selected_label = st.radio("功能导航", list(navigation), key="main_navigation",
+                                  label_visibility="collapsed")
+        selected = navigation[selected_label]
+
 
         st.divider()
-        st.markdown("#### Account")
-        operator_name = st.text_input("Operator", value=st.session_state.get("current_user") or "")
+        st.markdown("#### 当前账号")
+        operator_name = st.text_input("操作员", value=st.session_state.get("current_user") or "")
         st.caption(f"User: {st.session_state.get('current_user') or '-'}")
         st.caption(f"Role: {st.session_state.get('current_role') or '-'}")
-        if st.button("Logout", width="stretch", key="logout_button_jwt_final"):
+        if st.button("退出登录", width="stretch", key="logout_button_jwt_final"):
             logout()
             st.rerun()
 
@@ -1347,7 +1341,7 @@ def main() -> None:
         st.caption(f"Model scale: {st.session_state['model_type']}")
 
         st.divider()
-        st.caption("Table: task_history")
+        st.caption("任务概览")
         render_active_task_summary(history_df)
 
     if selected == "Home":

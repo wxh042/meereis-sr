@@ -8,6 +8,14 @@
 
 > 展示页包含真实平台截图与已计算样例，浏览无需安装或登录；模型推理服务在本地运行。
 
+## 拖动对比效果
+
+**[点击打开交互对比：直接拖动图像分界线 →](https://wxh042.github.io/meereis-sr/)**
+
+下面是平台原有拖动组件的真实操作录屏。GitHub README 展示动图，点击上方链接可亲自拖动，手机触摸和键盘操作均可使用。
+
+![平台真实拖动对比效果](docs/screenshots/slider-demo.gif)
+
 ## 平台最终效果
 
 ![MEEREIS-SR 平台首页](docs/screenshots/home.png)
